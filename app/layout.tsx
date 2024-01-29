@@ -4,6 +4,8 @@ import './globals.css'
 import AuthProvider from './components/providers/AuthProvider'
 import { Box, Sheet } from '@mui/joy'
 import Header from './components/Header'
+import { getServerSession } from 'next-auth'
+import authOptions from './lib/authOptions'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -12,17 +14,17 @@ export const metadata: Metadata = {
   description: 'Blog dédié à l\'esgi',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const session = await getServerSession(authOptions);
   return (
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning={true}>
-        <nav><Header/></nav>
-        {/* <AuthProvider session={session}> */}
-        {/* <AuthProvider> */}
+        <AuthProvider>
+          <nav><Header/></nav>
           <main>
             <Box
                 sx={{
@@ -36,7 +38,7 @@ export default function RootLayout({
                 </Sheet>
             </Box>
           </main>
-        {/* </AuthProvider> */}
+        </AuthProvider>
       </body>
     </html>
   )
