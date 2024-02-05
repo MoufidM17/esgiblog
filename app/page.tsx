@@ -1,95 +1,60 @@
 import Image from 'next/image'
 import styles from './page.module.css'
+import PostCard from './components/common/postCard'
+import { Box, Typography } from '@mui/joy'
+import { useEffect } from 'react'
+import { prismaClientDB } from './lib/prismaClient'
 
-export default function Home() {
+// Récupérer la liste des 
+
+export default async function Home() {
+
+  const getAllPosts = await prismaClientDB.post.findMany({
+    select: {
+      id: true,
+      title: true,
+      owner: {
+        select: {
+          id: true,
+          name: true,
+          // email: true,
+        }
+      },
+      likes: {
+        select: {
+          userId: true,
+          user: {
+            select: {
+              email: true
+            }
+          }
+        }
+      },
+      _count: {
+        select: { likes: true },
+      },
+    },
+    orderBy: [
+      {
+        updatedAt: 'asc',
+      }
+    ],
+  })
+  
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    <Box sx={{p: "12px"}}>
+      <Box sx={{mb: "12px"}}>
+        <Typography level="title-lg" textTransform="uppercase" sx={{ letterSpacing: '0.2rem', }}>Posts</Typography>
+      </Box>
+      <Box sx={{ gap: 2,  bgcolor: "white", display: "flex", justifyContent:"space-around", flexDirection:"row", flexWrap: 'wrap'}}>
+        {[...getAllPosts].map((article, index: number) => {
+          if (typeof  article == "number") {
+            return <PostCard />
+          }
+          return article ? <PostCard post={article}/> : <></>
+        })
+      } 
+      </Box>
+    </Box>
   )
 }
