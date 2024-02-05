@@ -27,7 +27,6 @@ export default function AccountPage () {
             <List>
                 <ListItem>
                     <ListItemDecorator>
-                        <Avatar src="https://lh3.googleusercontent.com/a/ACg8ocJkXB8ExBfOqxAUppbEBs0ZBZ1X1OpRY4ozM7lA9W9qF-U=s96-c"/>
                         <Avatar src={session.user?.image ?? "P"}/>
                     </ListItemDecorator>
                     <ListItemContent>
