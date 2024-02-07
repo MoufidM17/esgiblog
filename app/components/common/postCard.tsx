@@ -16,17 +16,15 @@ import { useRouter } from "next/navigation";
 import { signIn, useSession } from 'next-auth/react'
 import Link from "next/link";
 import { addLike, fetchLikeCount, removeLike } from "@/app/actions/post";
-// import { prismaClientDB } from "@/app/lib/prismaClient";
-// import useFavoriteStore from "../../../store/favoriteStore";
-// import { Rating, Recipe } from "@prisma/client";
+
 
 export type PostCardType = {
   id: string,
   title: string,
+  createdAt: Date,
   owner: {
     id: string,
     name: string | null,
-    // email: string | null,
   };
   likes: {
     user: {
@@ -38,9 +36,11 @@ export type PostCardType = {
     likes: number,
   };
 }
+
 const defaultPost = {
   id: "1",
   title: "title:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  createdAt: new Date(),
   owner : {
     id: "u1",
     name: "Author Name",
@@ -55,30 +55,22 @@ const defaultPost = {
     likes: 0,
   }
 }
+
 export default function PostCard({post = defaultPost}: {post?: PostCardType}) {
-  const { id, title, owner, likes, _count } = post
+  const { id, title, createdAt, owner, likes, _count } = post
   const router = useRouter()
   const { data : session } = useSession()
   const [isFavorite, setIsFavorite] = useState<boolean>(false)
   const [countLike, setCountLike] = useState<number>(0)
-  //   const { updateFavorites, getFavorites } = useFavoriteStore((state) => state);
 
-  const addLikeToPost = async () => {
-    const u = await addLike({id});
-    // setUser(u);
-  };
-
-  const removeLikeToPost = async () => {
-    const u = await removeLike({id});
-    // setUser(u);
-  };
+  const addLikeToPost = async () => await addLike({id})
+  const removeLikeToPost = async () => await removeLike({id})
 
   const handleSetFavorite = async () => {
     if (!session || !session.user){
       signIn()
       return
     } 
-    
     
     setIsFavorite(prev => !prev)
     if (isFavorite) {
@@ -88,7 +80,6 @@ export default function PostCard({post = defaultPost}: {post?: PostCardType}) {
       setCountLike(prevCountLike => prevCountLike + 1)
       addLikeToPost()
     }
-    // setCountLike(_count.likes)
   }
 
   useEffect(() => {
@@ -110,13 +101,11 @@ export default function PostCard({post = defaultPost}: {post?: PostCardType}) {
     }
 
     fetchData();
-    
-    
   }, [])
   
   return (
     <Card key={`postCard_${id}`} variant="outlined" sx={{ width: 390 }}>
-      <Box sx={{display:"flex", alignItems: "flex-start", justifyContent: "space-between", wordWrap: "break-word"}}>
+      <Box key={`postCard_head${id}`} sx={{display:"flex", alignItems: "flex-start", justifyContent: "space-between", wordWrap: "break-word"}}>
         <Box width={'80%'}>
           <Link href={`/posts/${ id }`}>
             <Typography level="title-lg" >{title}</Typography>
@@ -135,15 +124,25 @@ export default function PostCard({post = defaultPost}: {post?: PostCardType}) {
         />
       </AspectRatio>
       <CardContent>
-        <Typography>Author : {owner.name?.toLocaleUpperCase()}</Typography>
+        <Typography>Auteur : {owner.name?.toLocaleUpperCase()}</Typography>
       </CardContent>
       <CardOverflow variant="soft">
         <Divider inset="context" />
         <CardActions orientation="horizontal" sx={{display: 'flex', justifyContent: 'space-between'}}>
           <Typography level="body-xs">{countLike.toString()} like(s)</Typography>
-          <Typography level="body-xs">{"time"}</Typography>
+          <Typography level="body-xs">Publié : {convertDateToString(createdAt)}</Typography>
         </CardActions>
       </CardOverflow>
     </Card>
   );
+}
+
+const convertDateToString = (d: Date) : string => {
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  return d.toLocaleDateString("fr-FR", options)
 }

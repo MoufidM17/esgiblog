@@ -1,19 +1,19 @@
-'use client'
-// import { cache } from 'react'
 import { Avatar, Box, List, ListItem, ListItemContent, ListItemDecorator, Stack, Typography } from "@mui/joy";
-// import { prismaClientDB } from '../lib/prismaClient';
-import { useSession } from "next-auth/react"
+import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import type { Metadata } from 'next'
 
-// export const getUser = cache(async (id: string) => {
-//     const item = await prismaClientDB.user.findUnique({ where: {id} })
-//     return item
-// })
+import authOptions from "../lib/authOptions";
 
 
-export default function AccountPage () {
-    const { data: session } = useSession()
+export const metadata: Metadata = {
+    title: 'EsgiBloc • Account',
+    description: 'Blog dédié à l\'esgi',
+}
 
+export default async function AccountPage () {
+    const session = await getServerSession(authOptions)
+    
     // Redirect if user session is not defined
     if (!session) {
         redirect('/')

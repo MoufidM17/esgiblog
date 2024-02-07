@@ -61,35 +61,12 @@ export const removeLike = async ({id}: {id: string}) => {
       data: {
         likes: {
             deleteMany: {
-                // Spécifiez les conditions pour supprimer le like associé
+                // Spécifiez les conditions pour supprimer le like du user puis l'association du like et du user
                 userId: user.id,
             },
         },
       },
-    })    
-
-    // await prismaClientDB.user.update({
-    //   where: { id : id },
-    //   data: {
-    //     likedPosts: {
-    //       disconnect: {
-    //         postId_userId: {
-    //           userId: user.id,
-    //           postId: id
-    //         }
-    //       },
-    //     },
-    //   },
-    // });
-
-    // prismaClientDB.postLikes.delete({
-    //   where: {
-    //     postId_userId: {
-    //       userId: user.id,
-    //       postId: id
-    //     }
-    //   },
-    // });
+    })
 }
 
 export const fetchLikeCount = async ({postId}: {postId: string}) => {

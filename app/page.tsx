@@ -1,11 +1,8 @@
-import Image from 'next/image'
-import styles from './page.module.css'
-import PostCard from './components/common/postCard'
 import { Box, Typography } from '@mui/joy'
-import { useEffect } from 'react'
+
+import PostCard from './components/common/postCard'
 import { prismaClientDB } from './lib/prismaClient'
 
-// Récupérer la liste des 
 
 export default async function Home() {
 
@@ -13,11 +10,11 @@ export default async function Home() {
     select: {
       id: true,
       title: true,
+      createdAt: true,
       owner: {
         select: {
           id: true,
           name: true,
-          // email: true,
         }
       },
       likes: {
@@ -36,7 +33,7 @@ export default async function Home() {
     },
     orderBy: [
       {
-        updatedAt: 'asc',
+        updatedAt: 'desc',
       }
     ],
   })
@@ -47,13 +44,7 @@ export default async function Home() {
         <Typography level="title-lg" textTransform="uppercase" sx={{ letterSpacing: '0.2rem', }}>Posts</Typography>
       </Box>
       <Box sx={{ gap: 2,  bgcolor: "white", display: "flex", justifyContent:"space-around", flexDirection:"row", flexWrap: 'wrap'}}>
-        {[...getAllPosts].map((article, index: number) => {
-          if (typeof  article == "number") {
-            return <PostCard />
-          }
-          return article ? <PostCard post={article}/> : <></>
-        })
-      } 
+        {[...getAllPosts].map((article, index: number) => <PostCard post={article}/>)} 
       </Box>
     </Box>
   )

@@ -31,18 +31,17 @@ export default function Header () {
                     onClick={() => pathname != "/" && router.push("/")}
                     startDecorator={
                         <img
-                            src="/appIcon.svg"
+                            src="/appIcon.png"
                             loading="lazy"
-                            width="42"
-                            height="36"
+                            width="62"
+                            height="42"
                             alt=""
                         />
                     }
                     level="h4" 
                     fontWeight="xl"
-                    sx={{color: 'white', cursor:'pointer'}}
+                    sx={{color: 'white', cursor:'pointer',}}
                 >
-                    Esgiblog
                 </Typography>
             </Link>
             <UserMenu/>
