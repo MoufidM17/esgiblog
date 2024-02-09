@@ -20,8 +20,10 @@ export type PostCardType = {
 export type PostType = {
     title: string;
     description: string,
+    userId: string,
     owner: {
       name: string | null,
+      email: string | null,
     }
     createdAt: Date,
     updatedAt: Date,

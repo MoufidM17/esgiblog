@@ -85,9 +85,11 @@ export const fetchPost = async ({postId}: {postId: string}) => {
     select: {
       title: true,
       description: true,
+      userId: true,
       owner: {
         select: {
           name: true,
+          email: true,
         }
       },
       updatedAt: true,
