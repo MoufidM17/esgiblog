@@ -18,12 +18,13 @@ export type PostCardType = {
 }
 
 export type PostType = {
-    id: string;
     title: string;
-    description: string;
-    userId: string;
-    createdAt: Date;
-    updatedAt: Date;
+    description: string,
+    owner: {
+      name: string | null,
+    }
+    createdAt: Date,
+    updatedAt: Date,
 } | null
 
 export type Posts = PostCardType[]

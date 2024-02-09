@@ -17,21 +17,8 @@ import { signIn, useSession } from 'next-auth/react'
 import Link from "next/link";
 import { addLike, fetchLikeCount, removeLike } from "@/app/actions/post";
 import { PostCardType } from "@/app/common/types/posts";
+import { convertDateToString, toUppercaseFirstChar } from "@/app/lib/utils";
 
-
-const convertDateToString = (value: Date) : string => {
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  };
-  // return d.toLocaleDateString("fr-FR", options)
-  return value.toLocaleString("fr-FR", options)
-}
 
 export default function PostCard({post}: {post: PostCardType}) {
   const { id, title, createdAt, owner, likes, _count } = post
@@ -85,7 +72,7 @@ export default function PostCard({post}: {post: PostCardType}) {
       <Box key={`postCard_head${id}`} sx={{display:"flex", alignItems: "flex-start", justifyContent: "space-between", wordWrap: "break-word"}}>
         <Box width={'80%'}>
           <Link href={`/posts/${ id }`}>
-            <Typography level="title-lg" >{title}</Typography>
+            <Typography level="title-lg" >{toUppercaseFirstChar(title)}</Typography>
           </Link>
         </Box>
         <IconButton aria-label="Like minimal photography" variant="plain" onClick={handleSetFavorite} sx={{mt: "-0.5rem", "&:hover:":{color: "red"}}}>
