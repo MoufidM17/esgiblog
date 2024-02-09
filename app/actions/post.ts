@@ -78,3 +78,9 @@ export const fetchLikeCount = async ({postId}: {postId: string}) => {
     })
     return postLikesPosts?.likes.length
 }
+
+export const fetchPost = async ({postId}: {postId: string}) => {
+  return await prismaClientDB.post.findUnique({
+    where: { id : postId },
+  })
+}
