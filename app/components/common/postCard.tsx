@@ -16,47 +16,24 @@ import { useRouter } from "next/navigation";
 import { signIn, useSession } from 'next-auth/react'
 import Link from "next/link";
 import { addLike, fetchLikeCount, removeLike } from "@/app/actions/post";
+import { PostCardType } from "@/app/common/types/posts";
 
 
-export type PostCardType = {
-  id: string,
-  title: string,
-  createdAt: Date,
-  owner: {
-    id: string,
-    name: string | null,
+const convertDateToString = (value: Date) : string => {
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
   };
-  likes: {
-    user: {
-        email: string | null;
-    };
-    userId: string;
-  }[],
-  _count: {
-    likes: number,
-  };
+  // return d.toLocaleDateString("fr-FR", options)
+  return value.toLocaleString("fr-FR", options)
 }
 
-const defaultPost = {
-  id: "1",
-  title: "title:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  createdAt: new Date(),
-  owner : {
-    id: "u1",
-    name: "Author Name",
-  },
-  likes: [{
-      user: {
-          email: "email@gmail.com",
-      },
-      userId: "ul1"
-  }],
-  _count: {
-    likes: 0,
-  }
-}
-
-export default function PostCard({post = defaultPost}: {post?: PostCardType}) {
+export default function PostCard({post}: {post: PostCardType}) {
   const { id, title, createdAt, owner, likes, _count } = post
   const router = useRouter()
   const { data : session } = useSession()
@@ -137,16 +114,3 @@ export default function PostCard({post = defaultPost}: {post?: PostCardType}) {
   );
 }
 
-const convertDateToString = (value: Date) : string => {
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  };
-  // return d.toLocaleDateString("fr-FR", options)
-  return value.toLocaleString("fr-FR", options)
-}

@@ -3,16 +3,8 @@ import { Stack } from "@mui/joy";
 // import { useParams } from "next/navigation";
 import { fetchPost } from "../../actions/post";
 import { useEffect, useState } from "react";
+import { PostType } from "@/app/common/types/posts";
 
-
-type PostType = {
-    id: string;
-    title: string;
-    description: string;
-    userId: string;
-    createdAt: Date;
-    updatedAt: Date;
-} | null
 
 export default function PostItem({ params }: { params: { pid: string } }) {
     // const {pid} = useParams()
