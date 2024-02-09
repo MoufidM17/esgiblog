@@ -20,7 +20,7 @@ export default async function AccountPage () {
     }
     
     return (
-        <Box component={'main'} sx={{p: 4, gap: 2}}>
+        <Box key="acount" component={'main'} sx={{p: 4, gap: 2}}>
             <Typography id="esgiblog-account-label" level="body-lg" textTransform="uppercase" sx={{ letterSpacing: '0.15rem', }}>
                 Profile
             </Typography>

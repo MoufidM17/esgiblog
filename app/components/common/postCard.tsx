@@ -70,7 +70,7 @@ export default function PostCard({post}: {post: PostCardType}) {
   return (
     <Card key={`postCard_${id}`} variant="outlined" sx={{ width: 390 }}>
       <Box key={`postCard_head${id}`} sx={{display:"flex", alignItems: "flex-start", justifyContent: "space-between", wordWrap: "break-word"}}>
-        <Box width={'80%'}>
+        <Box key={`postCard_head_title${id}`}  width={'80%'}>
           <Link href={`/posts/${ id }`}>
             <Typography level="title-lg" >{toUppercaseFirstChar(title)}</Typography>
           </Link>

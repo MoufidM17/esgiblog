@@ -45,10 +45,10 @@ export default async function Home() {
   
   return (
     <Box sx={{p: "12px"}}>
-      <Box sx={{mb: "12px"}}>
+      <Box key="home_title" sx={{mb: "12px"}}>
         <Typography level="title-lg" textTransform="uppercase" sx={{ letterSpacing: '0.2rem', }}>Posts</Typography>
       </Box>
-      <Box sx={{ gap: 2,  bgcolor: "white", display: "flex", justifyContent:"space-around", flexDirection:"row", flexWrap: 'wrap'}}>
+      <Box key="home_posts" sx={{ gap: 2,  bgcolor: "white", display: "flex", justifyContent:"space-around", flexDirection:"row", flexWrap: 'wrap'}}>
         {[...getAllPosts].map(
           (post, index: number) => <PostCard post={post}/>)
         } 
