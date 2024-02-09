@@ -130,19 +130,23 @@ export default function PostCard({post = defaultPost}: {post?: PostCardType}) {
         <Divider inset="context" />
         <CardActions orientation="horizontal" sx={{display: 'flex', justifyContent: 'space-between'}}>
           <Typography level="body-xs">{countLike.toString()} like(s)</Typography>
-          <Typography level="body-xs">Publié : {convertDateToString(createdAt)}</Typography>
+          <Typography level="body-xs" suppressHydrationWarning>Publié : {convertDateToString(createdAt)}</Typography>
         </CardActions>
       </CardOverflow>
     </Card>
   );
 }
 
-const convertDateToString = (d: Date) : string => {
+const convertDateToString = (value: Date) : string => {
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
   };
-  return d.toLocaleDateString("fr-FR", options)
+  // return d.toLocaleDateString("fr-FR", options)
+  return value.toLocaleString("fr-FR", options)
 }
