@@ -1,7 +1,9 @@
 "use server"
 import { getServerSession } from "next-auth/next"
-import authOptions from "../lib/authOptions";
-import { prismaClientDB } from "../lib/prismaClient";
+import { Post } from "@prisma/client";
+
+import authOptions from "@/app/lib/authOptions";
+import { prismaClientDB } from "@/app/lib/prismaClient";
 
 export const addLike = async ({id}: {id: string}) => {
     const session = await getServerSession(authOptions);
@@ -95,5 +97,18 @@ export const fetchPost = async ({postId}: {postId: string}) => {
       updatedAt: true,
       createdAt: true,
     }
+  })
+}
+
+export const addPost = async ({post}: {post: Post}) => {
+  await prismaClientDB.post.create({
+    data: post
+  })
+}
+
+export const updatePost = async ({post}: {post: Post}) => {
+  await prismaClientDB.post.update({
+    where: {id: post.id},
+    data: post
   })
 }
