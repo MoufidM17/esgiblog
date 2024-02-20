@@ -85,6 +85,7 @@ export const fetchPost = async ({postId}: {postId: string}) => {
   return await prismaClientDB.post.findUnique({
     where: { id : postId },
     select: {
+      id: true,
       title: true,
       description: true,
       userId: true,

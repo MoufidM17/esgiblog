@@ -44,7 +44,7 @@ export default async function Home() {
   })
   
   return (
-    <Box sx={{p: "12px"}}>
+    <Box sx={{p: "12px", bgcolor: "#fff"}}>
       <Box key="home_title" sx={{mb: "12px"}}>
         <Typography level="title-lg" textTransform="uppercase" sx={{ letterSpacing: '0.2rem', }}>Posts</Typography>
       </Box>

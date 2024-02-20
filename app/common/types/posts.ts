@@ -1,12 +1,3 @@
-// export type PostType = {
-//   id?: string,
-//   title: string;
-//   description: string,
-//   userId: string,
-//   createdAt?: Date,
-//   updatedAt?: Date,
-// }
-
 export type PostCardType = {
     id: string,
     title: string,
@@ -27,6 +18,7 @@ export type PostCardType = {
 }
 
 export type GetPostType = {
+    id: string,
     title: string;
     description: string,
     userId: string,
