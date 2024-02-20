@@ -1,33 +1,37 @@
-import { cache } from 'react'
 import { Avatar, Box, List, ListItem, ListItemContent, ListItemDecorator, Stack, Typography } from "@mui/joy";
-import { prismaClientDB } from '../lib/prismaClient';
-import { useSession } from "next-auth/react"
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import type { Metadata } from 'next'
 
-export const getUser = cache(async (id: string) => {
-    const item = await prismaClientDB.user.findUnique({ where: {id} })
-    return item
-})
+import authOptions from "@/app/lib/authOptions";
 
 
-export default function AccountPage () {
-    const { data: session } = useSession()
-    console.log('datas => ', session);
+export const metadata: Metadata = {
+    title: 'EsgiBloc • Account',
+    description: 'Blog dédié à l\'esgi',
+}
+
+export default async function AccountPage () {
+    const session = await getServerSession(authOptions)
+    
+    // Redirect if user session is not defined
+    if (!session) {
+        redirect('/')
+    }
     
     return (
-        <Box component={'main'} sx={{p: 4, gap: 2}}>
-            <Typography id="esgiblog-account-label" level="body-lg" textTransform="uppercase"
-                sx={{ letterSpacing: '0.15rem', }}
-            >
+        <Box key="account" component={'main'} sx={{p: 4, gap: 2}}>
+            <Typography id="esgiblog-account-label" level="body-lg" textTransform="uppercase" sx={{ letterSpacing: '0.15rem', }}>
                 Profile
             </Typography>
             <List>
                 <ListItem>
                     <ListItemDecorator>
-                        <Avatar src="https://lh3.googleusercontent.com/a/ACg8ocJkXB8ExBfOqxAUppbEBs0ZBZ1X1OpRY4ozM7lA9W9qF-U=s96-c"/>
+                        <Avatar src={session.user?.image ?? "P"}/>
                     </ListItemDecorator>
                     <ListItemContent>
-                        <Typography level="body-lg" fontWeight='bold' textTransform="uppercase" >{'moufid MOUTAROU'}</Typography>
-                        <Typography level="body-md" noWrap> moufidmoutarou04@gmail.com </Typography>
+                        <Typography level="body-lg" fontWeight='bold' textTransform="uppercase" >{session.user?.name ?? "John Deo"}</Typography>
+                        <Typography level="body-md" noWrap>{session.user?.email ?? "johndeo@gmail.com"}</Typography>
                     </ListItemContent>
                 </ListItem>
             </List>

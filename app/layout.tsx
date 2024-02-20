@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import AuthProvider from './components/providers/AuthProvider'
 import { Box, Sheet } from '@mui/joy'
-import Header from './components/Header'
+import Header from './components/layout/Header'
 import { getServerSession } from 'next-auth'
 import authOptions from './lib/authOptions'
 

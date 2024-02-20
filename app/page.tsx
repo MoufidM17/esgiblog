@@ -1,95 +1,58 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+/**
+ * Rendering : server component
+ * Data Fetching : Server (server action)
+ */
 
-export default function Home() {
+import { Box, Typography } from '@mui/joy'
+
+import PostCard from '@/app/components/common/postCard'
+import { prismaClientDB } from '@/app/lib/prismaClient'
+import { Posts } from "@/app/common/types/posts";
+
+
+export default async function Home() {
+  const getAllPosts: Posts = await prismaClientDB.post.findMany({
+    select: {
+      id: true,
+      title: true,
+      createdAt: true,
+      owner: {
+        select: {
+          id: true,
+          name: true,
+        }
+      },
+      likes: {
+        select: {
+          userId: true,
+          user: {
+            select: {
+              email: true
+            }
+          }
+        }
+      },
+      _count: {
+        select: { likes: true },
+      },
+    },
+    orderBy: [
+      {
+        updatedAt: 'desc',
+      }
+    ],
+  })
+  
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    <Box sx={{p: "12px", bgcolor: "#fff"}}>
+      <Box key="home_title" sx={{mb: "12px"}}>
+        <Typography level="title-lg" textTransform="uppercase" sx={{ letterSpacing: '0.2rem', }}>Posts</Typography>
+      </Box>
+      <Box key="home_posts" sx={{ gap: 2,  bgcolor: "white", display: "flex", justifyContent:"space-around", flexDirection:"row", flexWrap: 'wrap'}}>
+        {[...getAllPosts].map(
+          (post, index: number) => <PostCard post={post}/>)
+        } 
+      </Box>
+    </Box>
   )
 }
