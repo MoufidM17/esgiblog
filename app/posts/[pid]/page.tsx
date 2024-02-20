@@ -1,4 +1,3 @@
-"use client"
 import PostItem from "@/app/components/common/postItem";
 
 
