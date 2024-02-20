@@ -9,7 +9,7 @@ export default function Header () {
     const pathname = usePathname()
 
     return (
-        <Box
+        <Box key={`app_header`} 
             component="header" className="Header"
             sx={{
                 p: 2,

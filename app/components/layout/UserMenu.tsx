@@ -22,7 +22,7 @@ export default function UserMenu  () {
             <Menu placement="bottom-end">
                 { (session?.user) ? 
                 (<>
-                    <MenuItem onClick={() => router.push('account')}>
+                    <MenuItem onClick={() => router.push('/account')}>
                     <ListItemDecorator> <User/> </ListItemDecorator>{' '}
                         My account
                     </MenuItem>

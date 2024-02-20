@@ -16,47 +16,11 @@ import { useRouter } from "next/navigation";
 import { signIn, useSession } from 'next-auth/react'
 import Link from "next/link";
 import { addLike, fetchLikeCount, removeLike } from "@/app/actions/post";
+import { PostCardType } from "@/app/common/types/posts";
+import { convertDateToString, toUppercaseFirstChar } from "@/app/lib/utils";
 
 
-export type PostCardType = {
-  id: string,
-  title: string,
-  createdAt: Date,
-  owner: {
-    id: string,
-    name: string | null,
-  };
-  likes: {
-    user: {
-        email: string | null;
-    };
-    userId: string;
-  }[],
-  _count: {
-    likes: number,
-  };
-}
-
-const defaultPost = {
-  id: "1",
-  title: "title:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  createdAt: new Date(),
-  owner : {
-    id: "u1",
-    name: "Author Name",
-  },
-  likes: [{
-      user: {
-          email: "email@gmail.com",
-      },
-      userId: "ul1"
-  }],
-  _count: {
-    likes: 0,
-  }
-}
-
-export default function PostCard({post = defaultPost}: {post?: PostCardType}) {
+export default function PostCard({post}: {post: PostCardType}) {
   const { id, title, createdAt, owner, likes, _count } = post
   const router = useRouter()
   const { data : session } = useSession()
@@ -106,9 +70,9 @@ export default function PostCard({post = defaultPost}: {post?: PostCardType}) {
   return (
     <Card key={`postCard_${id}`} variant="outlined" sx={{ width: 390 }}>
       <Box key={`postCard_head${id}`} sx={{display:"flex", alignItems: "flex-start", justifyContent: "space-between", wordWrap: "break-word"}}>
-        <Box width={'80%'}>
+        <Box key={`postCard_head_title${id}`}  width={'80%'}>
           <Link href={`/posts/${ id }`}>
-            <Typography level="title-lg" >{title}</Typography>
+            <Typography level="title-lg" >{toUppercaseFirstChar(title)}</Typography>
           </Link>
         </Box>
         <IconButton aria-label="Like minimal photography" variant="plain" onClick={handleSetFavorite} sx={{mt: "-0.5rem", "&:hover:":{color: "red"}}}>
@@ -130,19 +94,10 @@ export default function PostCard({post = defaultPost}: {post?: PostCardType}) {
         <Divider inset="context" />
         <CardActions orientation="horizontal" sx={{display: 'flex', justifyContent: 'space-between'}}>
           <Typography level="body-xs">{countLike.toString()} like(s)</Typography>
-          <Typography level="body-xs">Publié : {convertDateToString(createdAt)}</Typography>
+          <Typography level="body-xs" suppressHydrationWarning>Publié : {convertDateToString(createdAt)}</Typography>
         </CardActions>
       </CardOverflow>
     </Card>
   );
 }
 
-const convertDateToString = (d: Date) : string => {
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-  return d.toLocaleDateString("fr-FR", options)
-}

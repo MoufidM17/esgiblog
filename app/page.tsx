@@ -1,12 +1,17 @@
+/**
+ * Rendering : server component
+ * Data Fetching : Server (server action)
+ */
+
 import { Box, Typography } from '@mui/joy'
 
-import PostCard from './components/common/postCard'
-import { prismaClientDB } from './lib/prismaClient'
+import PostCard from '@/app/components/common/postCard'
+import { prismaClientDB } from '@/app/lib/prismaClient'
+import { Posts } from "@/app/common/types/posts";
 
 
 export default async function Home() {
-
-  const getAllPosts = await prismaClientDB.post.findMany({
+  const getAllPosts: Posts = await prismaClientDB.post.findMany({
     select: {
       id: true,
       title: true,
@@ -39,12 +44,14 @@ export default async function Home() {
   })
   
   return (
-    <Box sx={{p: "12px"}}>
-      <Box sx={{mb: "12px"}}>
+    <Box sx={{p: "12px", bgcolor: "#fff"}}>
+      <Box key="home_title" sx={{mb: "12px"}}>
         <Typography level="title-lg" textTransform="uppercase" sx={{ letterSpacing: '0.2rem', }}>Posts</Typography>
       </Box>
-      <Box sx={{ gap: 2,  bgcolor: "white", display: "flex", justifyContent:"space-around", flexDirection:"row", flexWrap: 'wrap'}}>
-        {[...getAllPosts].map((article, index: number) => <PostCard post={article}/>)} 
+      <Box key="home_posts" sx={{ gap: 2,  bgcolor: "white", display: "flex", justifyContent:"space-around", flexDirection:"row", flexWrap: 'wrap'}}>
+        {[...getAllPosts].map(
+          (post, index: number) => <PostCard post={post}/>)
+        } 
       </Box>
     </Box>
   )
