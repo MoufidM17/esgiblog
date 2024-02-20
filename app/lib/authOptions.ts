@@ -29,7 +29,6 @@ const authOptions : NextAuthOptions = {
       signIn: async ({ user, account, profile }: any ) => {
         if (account.provider === "google") {
           if (profile.email_verified && profile.email.endsWith("@gmail.com")) {
-            console.log('auth page user signIn => ', user);
             return user
           }
         }
