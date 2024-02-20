@@ -226,12 +226,11 @@ const PostEditorActions = ({post, newDescription, isNewPost}: {post: GetPostType
 
 
   const handlePostAddButtonClick = async () => {
-    
     if (post != null) {
       const { id, owner, ...data } = post 
       // console.log("data => ", {...data, userId: session?.user?.id, description: newDescription});
       await addPost({post: {...data, title: "New article", description: newDescription, userId: session?.user?.id}})
-      router.push(`/posts/${post?.id}`)
+      router.replace(`/posts`)
       alert("Créer avec succès")
     } else {
       alert("Erreur lors de la création du post")
