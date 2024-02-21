@@ -18,7 +18,7 @@ export default function UserMenu  () {
 
     return (
         <Dropdown open={isOpen} onOpenChange={handleOpenChange}>
-            <MenuButton><User/></MenuButton>
+            <MenuButton sx={{color:"#fff"}}><User/></MenuButton>
             <Menu placement="bottom-end">
                 { (session?.user) ? 
                 (<>

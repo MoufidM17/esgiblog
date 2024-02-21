@@ -29,19 +29,8 @@ const PostViewer = ({content= "<p>Hello World! 🌎️</p>"}: {content?: string}
       },
     }),
   ]
-  // const editor = useEditor({
-  //   extensions,
-  //   content: content,
-  //   autofocus: true,
-  //   editable: false,
-  //   onUpdate(props) {
-  //     console.log('datas ss => ', props.editor.getHTML());
-      
-  //   },
-  // })
 
   useEffect(() => {
-    console.log('datas sse => ', content);
     editord?.setOptions({
       extensions,
       content: data,
