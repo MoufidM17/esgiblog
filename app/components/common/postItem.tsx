@@ -23,7 +23,7 @@ export default function PostItem({ postId = "new" }: { postId?: string }) {
     
     useEffect(() => {
         if (postId == "new") {
-            setPost({id: "", title: "", description: "", owner: {email: session?.user?.email, name: session?.user?.name}, updatedAt: new Date()} as GetPostType)
+            setPost({id: "", title: "les avantages de l'IA pour optimiser votre expérience-utilisateur", description: "", owner: {email: session?.user?.email, name: session?.user?.name}, updatedAt: new Date()} as GetPostType)
         } else {
             getPost(postId as string)
         }

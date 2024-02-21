@@ -2,17 +2,26 @@
 import "@/app/testStyle/style.scss"
 // import { useEditor, EditorContent } from '@tiptap/react'
 import { Color } from '@tiptap/extension-color'
+import axios from 'axios';
 import ListItem from '@tiptap/extension-list-item'
 import TextStyle from '@tiptap/extension-text-style'
 import { EditorProvider, useCurrentEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { Button, IconButton, Stack } from "@mui/joy"
-import { useEffect, useState } from 'react'
+import { Button, CircularProgress, IconButton, Stack } from "@mui/joy"
+import { useCallback, useEffect, useState } from 'react'
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation";
-import { Save } from "react-feather"
+import { File, Save } from "react-feather"
 import { addPost, updatePost } from "@/app/actions/post"
 import { GetPostType } from "@/app/common/types/posts"
+import { z } from "zod";
+
+const schema = z.object({
+  message: z.object({
+    role: z.string(),
+    content: z.string(),
+  })
+});
 
 const MenuBar = () => {
   const { editor } = useCurrentEditor()
@@ -220,16 +229,16 @@ const extensions = [
   }),
 ]
 
-const PostEditorActions = ({post, newDescription, isNewPost}: {post: GetPostType, newDescription: string, isNewPost: boolean}) => {
+const PostEditorActions = ({post, newDescription, isNewPost, setter}: {post: GetPostType, newDescription: string, isNewPost: boolean, setter: (value: string) => void}) => {
   const router = useRouter()
   const { data: session } = useSession()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
 
   const handlePostAddButtonClick = async () => {
     if (post != null) {
       const { id, owner, ...data } = post 
-      // console.log("data => ", {...data, userId: session?.user?.id, description: newDescription});
-      await addPost({post: {...data, title: "New article", description: newDescription, userId: session?.user?.id}})
+      await addPost({post: {...data, description: newDescription, userId: session?.user?.id}})
       router.replace(`/posts`)
       alert("Créer avec succès")
     } else {
@@ -258,10 +267,53 @@ const PostEditorActions = ({post, newDescription, isNewPost}: {post: GetPostType
     }
   }
 
+  const generateDescription = async (data: string) => {
+    if (!post) {
+      alert("Error : Impossible de générer la description")
+      return
+    }
+    setIsLoading(true)
+    fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        data,
+      }),
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then((json) => {
+      return schema.safeParse(json);
+    })
+    .then((d) => {
+      return d.data.message.content;
+    })
+    .then((dd) => {
+      dd = dd.replaceAll("<body>", "").replaceAll("</body>", "")
+      setter(dd)
+    })
+    .catch((error) => {
+      console.error(error);
+    }).finally
+    (() => {
+      setIsLoading(false)
+    });
+  }
+
   return (
     <Stack direction="row" spacing={2} justifyContent="center">
       <IconButton sx={{gap: 1, p: 1}} variant="outlined"  onClick={handlePostCancelChangeButtonClick}>
         Retour à l'acceuil
+      </IconButton>
+      <IconButton sx={{bgcolor: "#000", p: 1, gap: 1}} variant="solid" onClick={() => {
+        if (post) {
+          generateDescription(post.title)
+        }
+      }}>
+        { isLoading ? <CircularProgress sx={{color: "#fff"}}/> : <File/> }  Générer la description
       </IconButton>
       <IconButton sx={{bgcolor: "#000", p: 1, gap: 1}} variant="solid" onClick={() => isNewPost ? handlePostAddButtonClick() : handlePostSaveButtonClick()}>
         <Save/> {isNewPost ? "Créer" : "Enregistrer"}
@@ -273,21 +325,17 @@ const PostEditorActions = ({post, newDescription, isNewPost}: {post: GetPostType
 
 const PostEditor = ({data, isNew}: {data: GetPostType, isNew: boolean}) => {
   const defaultContent = "<p>Hello World! 🌎️</p>"
-  const [desc, setDesc] = useState<string>("")
+  const [desc, setDesc] = useState<string>(defaultContent)
 
   useEffect(() => {
-    if (data) {
-      if(data?.description.length > 0) {
-        setDesc(data?.description) 
-      } else {
-        setDesc(defaultContent)
-      }
+    if (data && data.description.length > 0) {
+      setDesc(data.description) 
     }
-  },[data])
+  },[data,])
 
   return (
-    <Stack  spacing={2} sx={{bgcolor: "#fff", p: 2, m: 10}}>
-      <EditorProvider slotBefore={<MenuBar />} extensions={extensions} content={(data?.description && data?.description.length > 0 )? data?.description : defaultContent } children={<PostEditorActions post={data} newDescription={desc} isNewPost={isNew}/>} onUpdate={({editor})=>{
+    <Stack key={"post_editor"} spacing={2} sx={{bgcolor: "#fff", p: 2, m: 10}}>
+      <EditorProvider  slotBefore={<MenuBar />} extensions={extensions} content={desc } children={<PostEditorActions post={data} newDescription={desc} isNewPost={isNew} setter={setDesc}/>} onUpdate={({editor})=>{
         setDesc(editor.getHTML())
       }}
       ></EditorProvider>
