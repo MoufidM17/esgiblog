@@ -4,47 +4,30 @@ import { Post } from "@prisma/client";
 
 import authOptions from "@/app/lib/authOptions";
 import { prismaClientDB } from "@/app/lib/prismaClient";
+import { AddPostType } from "../common/types/posts";
 
 export const addLike = async ({id}: {id: string}) => {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if (session?.user?.email == null) return null
-    const user = await prismaClientDB.user.findUnique({
-      select: {id: true},
-      where: {
-        email: session?.user?.email
-      }
-    })
-    if (user == null) return null
+  if (session?.user?.email == null) return null
+  const user = await prismaClientDB.user.findUnique({
+    select: {id: true},
+    where: {
+      email: session?.user?.email
+    }
+  })
+  if (user == null) return null
 
-    const updatedPost = await prismaClientDB.post.update({
-      where: { id : id },
-      data: {
-        likes: {
-          create: {
-            userId: user.id,
-          },
+  const updatedPost = await prismaClientDB.post.update({
+    where: { id : id },
+    data: {
+      likes: {
+        create: {
+          userId: user.id,
         },
       },
-    })
-
-    // await prismaClientDB.postLikes.create({
-    //   data: {
-    //     postId: id,
-    //     userId: user.id
-    //   }
-    // })
-
-    // await prismaClientDB.user.update({
-    //   where: { id : id },
-    //   data: {
-    //     likedPosts: {
-    //       create: {
-    //         postId: id,
-    //       },
-    //     },
-    //   },
-    // });
+    },
+  })
 }
 
 export const removeLike = async ({id}: {id: string}) => {
@@ -101,15 +84,38 @@ export const fetchPost = async ({postId}: {postId: string}) => {
   })
 }
 
-export const addPost = async ({post}: {post: Post}) => {
+export const addPost = async ({post}: {post: AddPostType}) => {
   await prismaClientDB.post.create({
-    data: post
+    data: {
+      title: post.title,
+      description: post.description,
+      owner: {
+        connect: {
+          id: post.userId, // Remplacez ceci par l'ID de l'utilisateur
+        },
+      },
+    }
   })
 }
 
+/**
+ * Il semble que vous utilisez la méthode update de Prisma pour mettre à jour un post. Cependant, vous passez l'objet post entier à la propriété data. Cela pourrait être la cause du problème si l'objet post contient des champs qui ne devraient pas être mis à jour, comme createdAt ou id.
+ * Si vous voulez seulement mettre à jour certains champs, vous devriez spécifier ces champs dans l'objet data. Par exemple, si vous voulez seulement mettre à jour le title et le description,
+ * @param post
+ */
 export const updatePost = async ({post}: {post: Post}) => {
   await prismaClientDB.post.update({
     where: {id: post.id},
-    data: post
+    data: {
+      title: post.title,
+      description: post.description,
+      userId: post.userId,
+    }
+  })
+}
+
+export const deletePost = async ({id}: {id: string}) => {
+  await prismaClientDB.post.delete({
+    where: {id: id}
   })
 }

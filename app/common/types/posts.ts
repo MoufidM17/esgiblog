@@ -30,4 +30,12 @@ export type GetPostType = {
     updatedAt: Date,
 } | null
 
+export type AddPostType = {
+  title: string;
+  description: string,
+  userId: string,
+  createdAt?: Date,
+  updatedAt?: Date,
+} 
+
 export type Posts = PostCardType[]

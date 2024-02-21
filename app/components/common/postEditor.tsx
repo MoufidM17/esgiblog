@@ -4,15 +4,14 @@ import "@/app/testStyle/style.scss"
 import { Color } from '@tiptap/extension-color'
 import ListItem from '@tiptap/extension-list-item'
 import TextStyle from '@tiptap/extension-text-style'
-import { Editor, EditorProvider, useCurrentEditor } from '@tiptap/react'
+import { EditorProvider, useCurrentEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Button, IconButton, Stack } from "@mui/joy"
 import { useEffect, useState } from 'react'
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation";
-import { Edit2, Save } from "react-feather"
-import { updatePost } from "@/app/actions/post"
-import { Post } from "@prisma/client"
+import { Save } from "react-feather"
+import { addPost, updatePost } from "@/app/actions/post"
 import { GetPostType } from "@/app/common/types/posts"
 
 const MenuBar = () => {
@@ -221,8 +220,22 @@ const extensions = [
   }),
 ]
 
-const PostEditorActions = ({post, newDescription}: {post: GetPostType, newDescription: string}) => {
+const PostEditorActions = ({post, newDescription, isNewPost}: {post: GetPostType, newDescription: string, isNewPost: boolean}) => {
   const router = useRouter()
+  const { data: session } = useSession()
+
+
+  const handlePostAddButtonClick = async () => {
+    if (post != null) {
+      const { id, owner, ...data } = post 
+      // console.log("data => ", {...data, userId: session?.user?.id, description: newDescription});
+      await addPost({post: {...data, title: "New article", description: newDescription, userId: session?.user?.id}})
+      router.replace(`/posts`)
+      alert("Créer avec succès")
+    } else {
+      alert("Erreur lors de la création du post")
+    }
+  }
 
   const handlePostCancelChangeButtonClick = async () => {
     if (post != null) {
@@ -230,7 +243,7 @@ const PostEditorActions = ({post, newDescription}: {post: GetPostType, newDescri
       await updatePost({post: {...data, description: newDescription}})
       router.push(`/posts`)
     } else {
-      alert("Error")
+      alert("Erreur du serveur")
     }
   }
 
@@ -239,7 +252,7 @@ const PostEditorActions = ({post, newDescription}: {post: GetPostType, newDescri
       const { owner, description, ...data } = post     
       await updatePost({post: {...data, description: newDescription}})
       router.push(`/posts/${post?.id}`)
-      alert("Updated")
+      alert("Mise à jour avec succès")
     } else {
       alert("Error")
     }
@@ -250,31 +263,32 @@ const PostEditorActions = ({post, newDescription}: {post: GetPostType, newDescri
       <IconButton sx={{gap: 1, p: 1}} variant="outlined"  onClick={handlePostCancelChangeButtonClick}>
         Retour à l'acceuil
       </IconButton>
-      <IconButton sx={{bgcolor: "#000", p: 1, gap: 1}} variant="solid" onClick={handlePostSaveButtonClick}>
-        <Save/> Enregistrer
+      <IconButton sx={{bgcolor: "#000", p: 1, gap: 1}} variant="solid" onClick={() => isNewPost ? handlePostAddButtonClick() : handlePostSaveButtonClick()}>
+        <Save/> {isNewPost ? "Créer" : "Enregistrer"}
       </IconButton>
     </Stack>
   )
 }
 
 
-const PostEditor = ({data}: {data: GetPostType}) => {
+const PostEditor = ({data, isNew}: {data: GetPostType, isNew: boolean}) => {
   const defaultContent = "<p>Hello World! 🌎️</p>"
-  const [isUpdated, setIsUpdated] = useState<boolean>(false)
   const [desc, setDesc] = useState<string>("")
 
   useEffect(() => {
-    if (data) setDesc(data?.description)
+    if (data) {
+      if(data?.description.length > 0) {
+        setDesc(data?.description) 
+      } else {
+        setDesc(defaultContent)
+      }
+    }
   },[data])
 
   return (
     <Stack  spacing={2} sx={{bgcolor: "#fff", p: 2, m: 10}}>
-      <EditorProvider slotBefore={<MenuBar />} extensions={extensions} content={data?.description ?? defaultContent} children={<PostEditorActions post={data} newDescription={desc} />} onUpdate={({editor})=>{
+      <EditorProvider slotBefore={<MenuBar />} extensions={extensions} content={(data?.description && data?.description.length > 0 )? data?.description : defaultContent } children={<PostEditorActions post={data} newDescription={desc} isNewPost={isNew}/>} onUpdate={({editor})=>{
         setDesc(editor.getHTML())
-        setIsUpdated(prev => {
-          if (!data) return false
-          return data.description == desc
-        })
       }}
       ></EditorProvider>
     </Stack>

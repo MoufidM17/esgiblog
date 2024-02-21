@@ -32,7 +32,52 @@ const authOptions : NextAuthOptions = {
             return user
           }
         }
-        return null
+        return false
+      },
+      redirect: async ({ url, baseUrl }: any) => {
+        return baseUrl
+      },
+      session: async ({ session, user, token } :any) => {
+        if (user) {
+          session.user.id = user.id
+        }
+        return session;
+      },
+      jwt: async ({ token, user, account, profile, isNewUser } : any) => {
+        if (account) {
+          token.userId =  account.id 
+        }
+        return token
+      },
+    },
+}
+
+export default authOptions;
+
+/**
+ * Dans NextAuth.js, les callbacks sont des fonctions qui sont appelées pendant le cycle de vie de l'authentification. Ils vous permettent de contrôler et de personnaliser le comportement de NextAuth.js à différents points. Voici l'ordre dans lequel ils sont appelés :
+
+signIn: Ce callback est appelé quand un utilisateur tente de se connecter. Vous pouvez utiliser ce callback pour empêcher la connexion en fonction de divers critères.
+
+redirect: Ce callback est appelé quand NextAuth.js a besoin de rediriger l'utilisateur. Vous pouvez personnaliser les URL de redirection ici.
+
+session: Ce callback est appelé chaque fois qu'une session est accédée. Vous pouvez utiliser ce callback pour ajouter des informations supplémentaires à l'objet de session.
+
+jwt: Ce callback est appelé chaque fois qu'un JSON Web Token est créé ou mis à jour. Vous pouvez utiliser ce callback pour encoder et décoder le JWT.
+
+Ces callbacks sont tous optionnels et peuvent être utilisés en fonction de vos besoins spécifiques. Vous pouvez en savoir plus sur ces callbacks et comment les utiliser dans la documentation de NextAuth.js.
+ */
+
+/**
+ *     callbacks: {
+      signIn: async ({ user, account, profile }: any ) => {
+        if (account.provider === "google") {
+          if (profile.email_verified && profile.email.endsWith("@gmail.com")) {
+            console.log('auth page user => ', user);
+            return true
+          }
+        }
+        return false
       },
       redirect: async ({ url, baseUrl }: any) => {
         // Allows relative callback URLs
@@ -42,12 +87,14 @@ const authOptions : NextAuthOptions = {
         return baseUrl
       },
       session: async ({ session, token } :any) => {
+        // session.user.id = token.userId
         return session;
       },
       jwt: async ({ user, token, account } : any) => {
+          console.log('auth page suser => ', user);
+          console.log('auth page saccount => ', account);
+          // token.userId =  user.id 
         return token
       },
     },
-}
-
-export default authOptions;
+ */
