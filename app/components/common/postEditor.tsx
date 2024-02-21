@@ -279,7 +279,7 @@ const PostEditorActions = ({post, newDescription, isNewPost, setter}: {post: Get
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        data,
+        title: data,
       }),
     })
     .then((response) => {
