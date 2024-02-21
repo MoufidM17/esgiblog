@@ -335,7 +335,7 @@ const PostEditor = ({data, isNew}: {data: GetPostType, isNew: boolean}) => {
 
   return (
     <Stack key={"post_editor"} spacing={2} sx={{bgcolor: "#fff", p: 2, m: 10}}>
-      <EditorProvider  slotBefore={<MenuBar />} extensions={extensions} content={desc } children={<PostEditorActions post={data} newDescription={desc} isNewPost={isNew} setter={setDesc}/>} onUpdate={({editor})=>{
+      <EditorProvider key={desc} slotBefore={<MenuBar />} extensions={extensions} content={desc } children={<PostEditorActions post={data} newDescription={desc} isNewPost={isNew} setter={setDesc}/>} onUpdate={({editor})=>{
         setDesc(editor.getHTML())
       }}
       ></EditorProvider>
