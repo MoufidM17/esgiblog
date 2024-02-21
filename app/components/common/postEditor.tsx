@@ -8,7 +8,7 @@ import TextStyle from '@tiptap/extension-text-style'
 import { EditorProvider, useCurrentEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { Button, CircularProgress, IconButton, Stack } from "@mui/joy"
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation";
 import { File, Save } from "react-feather"
@@ -203,20 +203,12 @@ const MenuBar = () => {
       >
         redo
       </Button>
-      {/* <Button
-        color={editor.isActive('bold') ? "warning" : "neutral"}
-        onClick={() => editor.chain().focus().setColor('#958DF1').run()}
-        className={editor.isActive('textStyle', { color: '#958DF1' }) ? 'is-active' : ''}
-      >
-        purple
-      </Button> */}
     </Stack>
   )
 }
 
 const extensions = [
   Color.configure({ types: [TextStyle.name, ListItem.name] }),
-  // TextStyle.configure({ types: [ListItem.name] }),
   StarterKit.configure({
     bulletList: {
       keepMarks: true,
@@ -248,9 +240,8 @@ const PostEditorActions = ({post, newDescription, isNewPost, setter}: {post: Get
 
   const handlePostCancelChangeButtonClick = async () => {
     if (post != null) {
-      const { owner, description, ...data } = post     
-      await updatePost({post: {...data, description: newDescription}})
-      router.push(`/posts`)
+      setter(post.description)
+      alert("Modifications ignorés avec succès")
     } else {
       alert("Erreur du serveur")
     }
@@ -306,7 +297,7 @@ const PostEditorActions = ({post, newDescription, isNewPost, setter}: {post: Get
   return (
     <Stack direction="row" spacing={2} justifyContent="center">
       <IconButton sx={{gap: 1, p: 1}} variant="outlined"  onClick={handlePostCancelChangeButtonClick}>
-        Retour à l'acceuil
+        Ignorer les modifications
       </IconButton>
       <IconButton sx={{bgcolor: "#000", p: 1, gap: 1}} variant="solid" onClick={() => {
         if (post) {
@@ -326,17 +317,23 @@ const PostEditorActions = ({post, newDescription, isNewPost, setter}: {post: Get
 const PostEditor = ({data, isNew}: {data: GetPostType, isNew: boolean}) => {
   const defaultContent = "<p>Hello World! 🌎️</p>"
   const [desc, setDesc] = useState<string>(defaultContent)
+  const [editorKey, setEditorKey] = useState<number>(0)
+
+  const handleDescriptionChange = (value: string) => {
+    setDesc(value)
+    setEditorKey((prev:number) => { return prev + 1 })
+  }
 
   useEffect(() => {
     if (data && data.description.length > 0) {
-      setDesc(data.description) 
+      handleDescriptionChange(data.description) 
     }
   },[data,])
 
   return (
     <Stack key={"post_editor"} spacing={2} sx={{bgcolor: "#fff", p: 2, m: 10}}>
-      <EditorProvider key={desc} slotBefore={<MenuBar />} extensions={extensions} content={desc } children={<PostEditorActions post={data} newDescription={desc} isNewPost={isNew} setter={setDesc}/>} onUpdate={({editor})=>{
-        setDesc(editor.getHTML())
+      <EditorProvider key={editorKey} slotBefore={<MenuBar />} extensions={extensions} content={desc} children={<PostEditorActions post={data} newDescription={desc} isNewPost={isNew} setter={handleDescriptionChange}/>} onUpdate={({editor})=>{
+        handleDescriptionChange(editor.getHTML())
       }}
       ></EditorProvider>
     </Stack>
