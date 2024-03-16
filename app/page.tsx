@@ -2,14 +2,14 @@
  * Rendering : server component
  * Data Fetching : Server (server action)
  */
+import Link from 'next/link';
+import { getServerSession } from 'next-auth/next';
 import { Box, IconButton, Stack, Typography } from '@mui/joy'
 
 import PostCard from '@/app/components/common/postCard'
 import { prismaClientDB } from '@/app/lib/prismaClient'
 import { Posts } from "@/app/common/types/posts";
-import Link from 'next/link';
 import authOptions from './lib/authOptions';
-import { getServerSession } from 'next-auth/next';
 
 
 export default async function Home() {

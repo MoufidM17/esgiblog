@@ -21,10 +21,12 @@
     "@tiptap/starter-kit": "^2.2.2",
     "next": "14.0.4",
     "next-auth": "^4.24.5",
+    "openai": "^4.28.0",
     "react": "^18",
     "react-dom": "^18",
     "react-feather": "^2.0.10",
-    "sass": "^1.70.0"
+    "sass": "^1.70.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20",
